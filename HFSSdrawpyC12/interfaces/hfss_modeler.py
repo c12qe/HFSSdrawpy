@@ -391,7 +391,7 @@ class HfssDesign(COMWrapper):
                 "Frequency:=",
                 str(freq_ghz) + "GHz",
                 "MaxDeltaS:=",
-                max_delta_s,
+                max_delta_s,    
                 "MaximumPasses:=",
                 max_passes,
                 "MinimumPasses:=",
@@ -2040,7 +2040,7 @@ class HfssModeler(COMWrapper):
         )
         return new_name
 
-    def set_units(self, units="m"):
+    def set_units(self, units="m"   ):
         self._modeler.SetModelUnits(["NAME:Units Parameter", "Units:=", units, "Rescale:=", False])
 
     def subtract(self, blank_entities, tool_entities, keep_originals=False):

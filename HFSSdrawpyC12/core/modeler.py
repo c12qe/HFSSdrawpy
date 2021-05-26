@@ -41,8 +41,20 @@ class Modeler:
             from ..interfaces.hfss_modeler import get_desktop
 
             desktop = get_desktop()
-            project = desktop.get_active_project()
-            design = project.get_active_design()
+            try:
+                project = desktop.get_active_project()
+            except AttributeError:
+                project = desktop.new_project()
+            # else:
+            #     pass
+            # finally:
+            #     pass
+            # project = desktop.get_active_project()
+            try:
+                design = project.get_active_design()
+            except OSError:
+                design = project.new_design( name = 'NewDesign', type = 'DrivenModal')
+            self.project = project
             self.design = design
             self.modeler = design.modeler
             self.modeler.set_units("mm")
