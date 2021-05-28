@@ -57,7 +57,7 @@ class Modeler:
             self.project = project
             self.design = design
             self.modeler = design.modeler
-            self.modeler.set_units("mm")
+            self.modeler.set_units("um")
             self.modeler.delete_all_objects()
             desktop.clear_all_messages()
             self.interface = self.modeler

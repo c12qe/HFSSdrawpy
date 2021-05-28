@@ -13,4 +13,5 @@ GAP = 2
 MASK = 3
 RLC = 4
 MESH = 5
-PORT = 6
+PORT = 12 # Changed from 6 to 12
+GND = 11

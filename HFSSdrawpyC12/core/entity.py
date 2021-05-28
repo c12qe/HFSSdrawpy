@@ -125,6 +125,19 @@ class Entity:
             DeembedDist,
         )
 
+    def assign_lumped_port(
+        self,
+        DoRenorm = False,
+        DoDeembed = False,
+        prefix = 'port'
+    ):
+        self.body.interface.assign_lumped_port(
+            self,
+            prefix + "_" + self.name,
+            DoRenorm,
+            DoDeembed
+        )
+
     def assign_terminal_auto(self, ground, prefix="port"):
         self.body.interface.assign_terminal_auto(self, prefix + "_" + self.name, ground)
 

@@ -408,6 +408,42 @@ class HfssDesign(COMWrapper):
         )
         return HfssDMSetup(self, name)
 
+    def create_dt_setup(
+        self,
+        freq_ghz=1,
+        name="Setup",
+        max_delta_s=0.1,
+        max_passes=10,
+        min_passes=1,
+        min_converged=1,
+        pct_refinement=30,
+        basis_order=-1,
+    ):
+
+        name = increment_name(name, self.get_setup_names())
+        self._setup_module.InsertSetup(
+            "HfssDriven",
+            [
+                "NAME:" + name,
+                "Frequency:=",
+                str(freq_ghz) + "GHz",
+                "MaxDeltaS:=",
+                max_delta_s,    
+                "MaximumPasses:=",
+                max_passes,
+                "MinimumPasses:=",
+                min_passes,
+                "MinimumConvergedPasses:=",
+                min_converged,
+                "PercentRefinement:=",
+                pct_refinement,
+                "IsEnabled:=",
+                True,
+                "BasisOrder:=",
+                basis_order,
+            ],
+        )
+        return HfssDMSetup(self, name)
     def create_em_setup(
         self,
         name="Setup",
@@ -592,10 +628,11 @@ class HfssSetup(HfssPropertyObject):
         self,
         start_ghz,
         stop_ghz,
-        count=None,
+        count=None, #Correspond to RangeCount
+        count_interp = None, # Correspond to InterpMaxSolns for Interpolate sweep
         step_ghz=None,
         name="Sweep",
-        type="Fast",
+        type="Interpolating", #Could also be Discrete
         save_fields=False,
     ):
         if (count is None) == (step_ghz is None):
@@ -632,6 +669,24 @@ class HfssSetup(HfssPropertyObject):
                     "LinearCount",
                     "Count:=",
                     count,
+                ]
+            )
+        if type == "Interpolating":
+            params.extend(
+                [
+                    "InterpTolerance:=" , 0.5,
+                    "InterpMaxSolns:="  , count_interp,
+                    "InterpMinSolns:="  , 0,
+                    "InterpMinSubranges:="  , 1,
+                    "InterpUseS:="      , True,
+                    "InterpUsePortImped:="  , True,
+                    "InterpUsePropConst:="  , True,
+                    "UseDerivativeConvergence:=", False,
+                    "InterpDerivTolerance:=", 0.2,
+                    "UseFullBasis:="    , True,
+                    "EnforcePassivity:="    , True,
+                    "PassivityErrorTolerance:=", 0.0001,
+                    "EnforceCausality:="    , False
                 ]
             )
 
@@ -1637,7 +1692,31 @@ class HfssModeler(COMWrapper):
                 modesarray,
             ]
         )
+    def assign_lumped_port(self, entity, name,DoRenorm, DoDeembed, ground):
+        '''
+Still on progress
+        '''
+        faces = list(self.get_face_ids(entity))
+        faces = [int(ii) for ii in faces]
+        _ground = ground
+        TerminalIDList = self.assign_terminal_auto(_ground)
+                                                   
+        self._boundaries.AssignLumpedPort(
+            [
+                "NAME:" + name,
+                "Faces:=",
+                faces,
+                "RenormalizeAllTerminals:=",
+                DoRenorm,
+                "DoDeembed:=",
+                DoDeembed,
+                "TerminalIDList:=",
+                TerminalIDList,
+                "FullResistance:=",
+                "50Ohm",
+            ]
 
+        )
     def assign_terminal_auto(self, entity, name, ground):
         """auto-generates Terminals on a Waveport
 
