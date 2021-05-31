@@ -53,7 +53,7 @@ class Modeler:
             try:
                 design = project.get_active_design()
             except OSError:
-                design = project.new_design( name = 'NewDesign', type = 'DrivenModal')
+                design = project.new_design( name = 'NewDesign', type = 'DrivenTerminal')
             self.project = project
             self.design = design
             self.modeler = design.modeler
